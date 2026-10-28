@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BLOC · MIZ VISUEL</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="BLOC, l'écran de show du pupitreur lumière : timecode, setlist, conduite grandMA3 et réseau, sur un Mac au plateau. Bêta ouverte sur demande.">
+<meta property="og:title" content="BLOC · l'écran de show du pupitreur">
+<meta property="og:description" content="Timecode, setlist, conduite grandMA3 et réseau, lisibles de loin. Bêta sur demande.">
+<meta property="og:image" content="assets/bloc-icone.png">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Mise en page : une seule colonne qui descend comme un rack — l'écran de show monté en façade, puis les modules, puis la demande de bêta. Noir de scène, toujours. */
+:root {
+  --noir: #000000;
+  --surface: #0D0D0D;
+  --surface2: #141414;
+  --trait: #232323;
+  --texte1: #D9D4CB;
+  --texte2: #8C877F;
+  --texte3: #55524D;
+  --ambre: #D98A1E;
+  --ok: #3A7D4F;
+  --tc: #4FA868;
+  --alerte: #E0402E;
+  --co2: #3F8FD2;
+  --flammes: #E8305A;
+  --cue: #4A88BC;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --texte: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--noir); }
+body {
+  margin: 0;
+  background: var(--noir);
+  color: var(--texte1);
+  font-family: var(--texte);
+  font-size: 17px;
+  line-height: 1.55;
+  font-variation-settings: "wdth" 100;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+:focus-visible { outline: 2px solid var(--ambre); outline-offset: 3px; }
+
+.cadre {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ——— En-tête ——— */
+header.haut { padding-block: 22px; }
+header.haut .cadre { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+header.haut .logo { height: 34px; width: auto; }
+.bouton {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--display); font-weight: 750; font-variation-settings: "wdth" 112;
+  font-size: 15px; letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+  padding: 12px 20px; border-radius: 6px; border: 1px solid var(--trait);
+  color: var(--texte1); background: var(--surface2);
+  transition: border-color .15s, background .15s;
+}
+.bouton:hover { border-color: var(--texte3); }
+.bouton.accent { background: var(--ambre); border-color: var(--ambre); color: #120B02; }
+.bouton.accent:hover { background: #E89A2E; }
+.bouton .tri { width: 0; height: 0; border-left: 9px solid currentColor; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+
+/* ——— Ouverture ——— */
+.ouverture { padding-block: 40px 28px; }
+.etiquette {
+  font-family: var(--mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ambre);
+}
+h1 {
+  font-family: var(--display); font-weight: 900; font-variation-settings: "wdth" 125;
+  font-size: clamp(40px, 7.4vw, 92px); line-height: .95; letter-spacing: -.01em;
+  text-transform: uppercase; margin: 14px 0 22px; text-wrap: balance;
+}
+h1 em { font-style: normal; color: var(--ambre); }
+.chapeau { max-width: 62ch; color: var(--texte2); font-size: clamp(17px, 1.9vw, 20px); margin: 0 0 28px; }
+.chapeau strong { color: var(--texte1); font-weight: 600; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.note-mono { font-family: var(--mono); font-size: 13px; color: var(--texte3); }
+
+/* ——— L'écran en rack ——— */
+.rack { margin: 44px 0 0; position: relative; }
+.rack-chassis {
+  display: grid; grid-template-columns: 34px 1fr 34px; align-items: stretch;
+  background: linear-gradient(#151515, #0B0B0B); border: 1px solid #262626; border-radius: 4px;
+  padding: 14px 0; box-shadow: 0 30px 80px rgba(217, 138, 30, .06);
+}
+.oreille { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding-block: 10px; }
+.vis { width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #4a4a4a, #161616); box-shadow: inset 0 0 0 1px #000; position: relative; }
+.vis::after { content: ""; position: absolute; left: 2px; right: 2px; top: 5px; height: 1px; background: #0a0a0a; }
+.ecran-boite { position: relative; width: 100%; aspect-ratio: 16 / 10; background: #000; border: 1px solid #1d1d1d; overflow: hidden; }
+.ecran { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; }
+.legende-rack { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-family: var(--mono); font-size: 12px; color: var(--texte3); letter-spacing: .06em; text-transform: uppercase; }
+
+/* Écran SHOW reconstitué (données de la tournée de démonstration) */
+.show { position: absolute; inset: 0; padding: 20px 26px; display: grid; grid-template-columns: 1fr 440px; grid-template-rows: auto 1fr; gap: 14px 26px; font-family: var(--texte); color: var(--texte1); }
+.show .bandeau { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 24px; align-items: start; }
+.show .tournee b { display: block; font-family: var(--display); font-variation-settings: "wdth" 100; font-weight: 800; font-size: 34px; color: #4F94D0; line-height: 1.1; }
+.show .tournee span { display: block; font-size: 18px; color: var(--texte2); }
+.show .tournee i { display: block; font-style: normal; font-family: var(--mono); font-weight: 700; font-size: 18px; color: var(--ambre); margin-top: 4px; letter-spacing: .04em; }
+.show .tc { font-family: var(--mono); font-weight: 700; font-size: 92px; line-height: 1; color: var(--tc); letter-spacing: -.02em; font-variant-numeric: tabular-nums; text-align: center; }
+.show .etat { text-align: center; margin-top: 8px; font-family: var(--display); font-weight: 800; font-size: 26px; font-variation-settings: "wdth" 100; }
+.show .etat small { display: block; font-family: var(--mono); font-weight: 500; font-size: 16px; color: var(--texte3); margin-top: 2px; }
+.show .droite { text-align: right; }
+.show .heure { font-family: var(--mono); font-weight: 700; font-size: 52px; line-height: 1; font-variant-numeric: tabular-nums; }
+.show .voyant { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; font-size: 19px; color: var(--texte2); }
+.show .voyant b { background: var(--ok); color: #DDF0E2; font-family: var(--mono); font-size: 17px; padding: 1px 8px; border-radius: 3px; }
+.show .gauche { display: flex; flex-direction: column; gap: 11px; min-width: 0; }
+.show .titre { display: flex; align-items: center; gap: 16px; }
+.show .titre b { font-family: var(--display); font-weight: 850; font-variation-settings: "wdth" 110; font-size: 50px; line-height: 1; }
+.badge { font-family: var(--display); font-weight: 800; font-variation-settings: "wdth" 110; font-size: 20px; letter-spacing: .06em; padding: 3px 12px; border-radius: 6px; color: #fff; }
+.badge.f { background: var(--flammes); }
+.badge.c { background: var(--co2); }
+.show .rubrique { font-size: 15px; font-weight: 700; letter-spacing: .16em; color: var(--texte3); text-transform: uppercase; }
+.conduite { border: 1px solid var(--trait); }
+.conduite .ligne { display: grid; grid-template-columns: 40px 90px 1fr; align-items: center; height: 38px; border-top: 1px solid var(--trait); font-size: 23px; color: var(--texte2); transition: background .25s, color .25s; }
+.conduite .ligne:first-child { border-top: 0; height: 28px; font-size: 14px; font-weight: 700; letter-spacing: .14em; color: var(--texte3); }
+.conduite .ligne span:nth-child(2) { font-family: var(--mono); text-align: right; padding-right: 22px; }
+.conduite .ligne.encours { background: var(--cue); color: #fff; font-weight: 700; }
+.conduite .ligne.encours span:first-child::before { content: ""; display: block; margin-left: 14px; width: 0; height: 0; border-left: 13px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.conduite .ligne.passee { color: var(--texte3); }
+.show .compteur { display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 24px; color: var(--texte2); border-top: 1px solid var(--trait); border-bottom: 1px solid var(--trait); padding-block: 6px; }
+.cases { display: flex; gap: 5px; margin-left: auto; }
+.cases span { width: 30px; height: 26px; border-radius: 3px; background: var(--ok); color: #DDF0E2; font-size: 14px; display: grid; place-items: center; font-weight: 700; }
+.cases span.perdu { background: var(--alerte); color: #fff; animation: clignote 1s steps(2, jump-none) infinite; }
+@keyframes clignote { 50% { background: #3b0f0a; color: #E0402E; } }
+.show .suivant { font-size: 18px; color: var(--texte3); display: flex; align-items: baseline; gap: 14px; }
+.show .suivant b { font-size: 28px; color: var(--texte1); font-weight: 600; }
+.reseau { border: 1px solid var(--trait); font-family: var(--mono); font-size: 16px; }
+.reseau div { display: grid; grid-template-columns: 22px 1.6fr 1.5fr 1fr .9fr; align-items: center; gap: 8px; padding: 4px 12px; border-top: 1px solid var(--trait); color: var(--texte2); }
+.reseau div:first-child { border-top: 0; font-family: var(--texte); font-size: 13px; letter-spacing: .14em; font-weight: 700; color: var(--texte3); }
+.reseau i { width: 12px; height: 12px; border-radius: 50%; background: var(--ok); display: block; }
+.reseau i.rouge { background: var(--alerte); animation: clignote 1s steps(2, jump-none) infinite; }
+.reseau .r { color: var(--alerte); }
+.setlist { display: flex; flex-direction: column; }
+.setlist div { display: grid; grid-template-columns: 30px 46px 1fr auto auto; gap: 10px; align-items: center; height: 54px; padding: 0 14px; font-size: 25px; color: var(--texte2); transition: background .25s; }
+.setlist div > span:nth-child(2), .setlist div > span:nth-child(4), .setlist div > span:nth-child(5) { font-family: var(--mono); }
+.setlist div > span:nth-child(4) { font-size: 17px; color: var(--texte3); }
+.setlist div > span:nth-child(5) { color: var(--texte1); }
+.setlist div.encours { background: #0E1C29; color: #5AA2DE; font-weight: 700; box-shadow: inset 4px 0 0 #4F94D0; }
+.setlist div.encours > span:first-child::before { content: ""; display: block; width: 0; height: 0; border-left: 13px solid #4F94D0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.pastille { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
+.show .pied { margin-top: auto; display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--trait); padding-top: 10px; }
+.show .pied img { height: 28px; width: auto; }
+.show .pied span { font-size: 16px; color: var(--texte3); }
+
+/* ——— Ce que fait BLOC ——— */
+section { padding-block: 72px 8px; }
+h2 {
+  font-family: var(--display); font-weight: 850; font-variation-settings: "wdth" 118;
+  font-size: clamp(28px, 4vw, 46px); line-height: 1.02; text-transform: uppercase; margin: 10px 0 18px; text-wrap: balance;
+}
+.intro { max-width: 64ch; color: var(--texte2); margin: 0 0 36px; }
+.modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--trait); }
+.module { padding: 26px 26px 30px 0; border-bottom: 1px solid var(--trait); min-width: 0; }
+.module + .module { padding-left: 26px; border-left: 1px solid var(--trait); }
+.module:nth-child(3n+1) { padding-left: 0; border-left: 0; }
+.module .code { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--texte3); text-transform: uppercase; }
+.module h3 { font-family: var(--display); font-weight: 800; font-variation-settings: "wdth" 108; font-size: 22px; margin: 8px 0 8px; line-height: 1.15; }
+.module p { margin: 0; color: var(--texte2); font-size: 16px; }
+.module .valeur { font-family: var(--mono); color: var(--ambre); }
+
+/* ——— Téléphone et règles ——— */
+.duo { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 56px; align-items: center; }
+.regles { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.regles li { display: grid; grid-template-columns: 26px 1fr; gap: 14px; color: var(--texte2); }
+.regles li::before { content: ""; width: 14px; height: 14px; margin-top: 6px; border: 2px solid var(--ambre); border-radius: 50%; }
+.regles b { color: var(--texte1); font-weight: 650; }
+.telephone { width: 300px; max-width: 100%; margin-inline: auto; border: 10px solid #1A1A1A; border-radius: 42px; background: #000; padding: 26px 18px 18px; box-shadow: 0 0 0 1px #2a2a2a; }
+.telephone .haut-tel { display: flex; justify-content: space-between; align-items: baseline; }
+.telephone .haut-tel b { color: #4F94D0; font-family: var(--display); font-weight: 800; font-size: 20px; }
+.telephone .haut-tel span { font-size: 12px; color: var(--texte3); }
+.telephone .tc-tel { font-family: var(--mono); font-weight: 700; font-size: 38px; color: var(--tc); text-align: center; margin: 14px 0 2px; font-variant-numeric: tabular-nums; }
+.telephone .sous { text-align: center; font-size: 13px; color: var(--texte2); }
+.telephone .lab { font-size: 11px; letter-spacing: .16em; color: var(--texte3); font-weight: 700; margin-top: 18px; }
+.telephone .morceau { font-size: 24px; font-weight: 700; }
+.telephone .barre { height: 4px; background: var(--trait); border-radius: 2px; margin: 10px 0; }
+.telephone .barre i { display: block; height: 100%; width: 22%; background: var(--ambre); border-radius: 2px; transition: width .4s; }
+.telephone .btn { border: 2px solid var(--texte3); border-radius: 12px; text-align: center; padding: 12px; font-weight: 700; font-size: 18px; margin-top: 10px; }
+.telephone .btn.vu { border-color: var(--ok); color: #63B57E; }
+.telephone .onglets { display: flex; justify-content: space-around; margin-top: 18px; font-size: 12px; letter-spacing: .14em; font-weight: 700; color: var(--texte3); }
+.telephone .onglets b { color: var(--ambre); }
+
+/* ——— Compatibilité ——— */
+.fiche { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid var(--trait); border-radius: 6px; overflow: hidden; }
+.fiche div { padding: 20px 22px; border-left: 1px solid var(--trait); min-width: 0; }
+.fiche div:first-child { border-left: 0; }
+.fiche dt { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: var(--texte3); text-transform: uppercase; }
+.fiche dd { margin: 6px 0 0; font-size: 17px; }
+.fiche dd small { display: block; color: var(--texte2); font-size: 14px; }
+
+/* ——— Bêta ——— */
+.beta { margin-top: 80px; background: var(--surface); border-top: 1px solid var(--trait); border-bottom: 1px solid var(--trait); }
+.beta .cadre { padding-block: 64px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.beta ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; counter-reset: etape; }
+.beta ol li { counter-increment: etape; display: grid; grid-template-columns: 44px 1fr; gap: 12px; color: var(--texte2); }
+.beta ol li::before { content: counter(etape, decimal-leading-zero); font-family: var(--mono); font-weight: 700; color: var(--ambre); }
+.beta ol b { color: var(--texte1); }
+.encart { border: 1px solid var(--trait); background: var(--noir); border-radius: 8px; padding: 26px; display: grid; gap: 16px; }
+.encart p { margin: 0; color: var(--texte2); font-size: 15px; }
+.encart .bouton { justify-content: center; }
+.attente { font-family: var(--mono); font-size: 13px; color: var(--texte3); }
+
+footer { padding-block: 40px 56px; }
+footer .cadre { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+footer img { height: 40px; width: auto; }
+footer p { margin: 0; font-size: 14px; color: var(--texte3); }
+
+@media (max-width: 900px) {
+  .modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .module:nth-child(3n+1) { padding-left: 26px; border-left: 1px solid var(--trait); }
+  .module:nth-child(2n+1) { padding-left: 0; border-left: 0; }
+  .duo, .beta .cadre { grid-template-columns: 1fr; }
+  .fiche { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fiche div:nth-child(3) { border-left: 0; }
+  .fiche div:nth-child(n+3) { border-top: 1px solid var(--trait); }
+}
+@media (max-width: 560px) {
+  header.haut .bouton { display: none; }
+  .modules { grid-template-columns: 1fr; }
+  .module, .module + .module { padding-left: 0; border-left: 0; }
+  .fiche { grid-template-columns: 1fr; }
+  .fiche div { border-left: 0; border-top: 1px solid var(--trait); }
+  .fiche div:first-child { border-top: 0; }
+  .rack-chassis { grid-template-columns: 16px 1fr 16px; padding: 8px 0; }
+  .vis { width: 7px; height: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cases span.perdu, .reseau i.rouge { animation: none; }
+  .conduite .ligne, .setlist div, .telephone .barre i { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="haut">
+  <div class="cadre">
+    <img class="logo" src="assets/bloc-logo.png" alt="BLOC" width="95" height="34">
+    <a class="bouton accent" href="#beta"><span class="tri" aria-hidden="true"></span>Demander la bêta</a>
+  </div>
+</header>
+
+<main>
+  <div class="cadre ouverture">
+    <div class="etiquette">Écran de show · grandMA3 · macOS</div>
+    <h1>Tout le show <em>sous les yeux</em>, lisible de loin.</h1>
+    <p class="chapeau">BLOC affiche au plateau ce dont le pupitreur et l'équipe lumière ont besoin pendant le show : <strong>le timecode, la setlist, la conduite de la console et l'état du réseau</strong>. Il tourne sur un Mac, même un vieux Mac mini en rack, à côté de grandMA3.</p>
+    <div class="actions">
+      <a class="bouton accent" href="#beta"><span class="tri" aria-hidden="true"></span>Demander la bêta</a>
+      <a class="bouton" href="#modules">Voir ce qu'il affiche</a>
+    </div>
+
+    <figure class="rack" aria-label="L'écran SHOW de BLOC, avec la tournée de démonstration">
+      <div class="rack-chassis">
+        <div class="oreille" aria-hidden="true"><span class="vis"></span><span class="vis"></span></div>
+        <div class="ecran-boite" id="boite">
+          <div class="ecran" id="ecran">
+            <div class="show">
+              <div class="bandeau">
+                <div class="tournee">
+                  <b>DÉMO BLOC</b>
+                  <span>mer. 28 oct. · Salle de démo, Paris</span>
+                  <i id="decompte">SHOW DANS 13:42</i>
+                </div>
+                <div>
+                  <div class="tc" id="tc">01:02:22:02</div>
+                  <div class="etat">▶ DÉFILE<small>25 i/s · LTC</small></div>
+                </div>
+                <div class="droite">
+                  <div class="heure" id="heure">21:14:07</div>
+                  <div class="voyant">Liaison console <b>OK</b></div>
+                  <div class="voyant">Signal LTC <b>OK</b></div>
+                </div>
+              </div>
+
+              <div class="gauche">
+                <div class="titre"><b>01 INTRO</b><span class="badge f">FLAMMES</span></div>
+                <div>
+                  <div class="rubrique">Conduite · Intro</div>
+                  <div class="conduite" id="conduite">
+                    <div class="ligne"><span></span><span>CUE</span><span>NOM</span></div>
+                  </div>
+                </div>
+                <div class="compteur">
+                  <span>Morceau 1/6</span><span>·</span><span id="duree">Show 0:00:22</span>
+                  <div class="cases" aria-label="Univers DMX">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span class="perdu">5</span><span>6</span>
+                  </div>
+                </div>
+                <div class="suivant">Suivant <b>02 LUMIÈRE</b> 124 BPM</div>
+                <div class="reseau">
+                  <div><span></span><span>APPAREIL</span><span>IP</span><span>TYPE</span><span>PING</span></div>
+                  <div><i></i><span>Console</span><span>10.0.0.10</span><span>MA3</span><span>1 ms</span></div>
+                  <div><i></i><span>Node cour</span><span>10.0.0.21</span><span>Node</span><span>2 ms</span></div>
+                  <div><i class="rouge"></i><span>Node jardin</span><span>10.0.0.22</span><span>Node</span><span class="r">perdu</span></div>
+                </div>
+              </div>
+
+              <div class="setlist" id="setlist"></div>
+            </div>
+          </div>
+        </div>
+        <div class="oreille" aria-hidden="true"><span class="vis"></span><span class="vis"></span></div>
+      </div>
+      <figcaption class="legende-rack"><span>Mode SHOW · tournée de démonstration</span><span>Écran 15 pouces en rack, Mac mini 2014</span></figcaption>
+    </figure>
+  </div>
+
+  <section id="modules">
+    <div class="cadre">
+      <div class="etiquette">Ce que BLOC affiche</div>
+      <h2>Ce que la console sait, l'équipe le voit.</h2>
+      <p class="intro">Rien à ressaisir : BLOC lit la console et le réseau. Un état incertain est dit incertain, un signal perdu se voit tout de suite.</p>
+      <div class="modules">
+        <article class="module">
+          <div class="code">Timecode</div>
+          <h3>Le timecode, images comprises</h3>
+          <p>Reçu de grandMA3 par le plugin <span class="valeur">BlocTC</span>, avec la source, la cadence et un voyant qui passe au rouge s'il n'est plus confirmé.</p>
+        </article>
+        <article class="module">
+          <div class="code">Setlist</div>
+          <h3>La setlist et les effets</h3>
+          <p>Morceau en cours, suivant, BPM, durée du show. Des tags pour chaque titre : flammes, CO₂, confettis, ou les vôtres, avec leur couleur.</p>
+        </article>
+        <article class="module">
+          <div class="code">Conduite</div>
+          <h3>La cue list de la console</h3>
+          <p>La séquence sélectionnée sur la console défile à chaque Go, comme dans un tableau grandMA3. Rien à saisir.</p>
+        </article>
+        <article class="module">
+          <div class="code">Réseau</div>
+          <h3>Nodes et univers</h3>
+          <p>Chaque appareil avec son IP et son ping, chaque univers sACN ou Art-Net en petite case. Un décrochage clignote en rouge.</p>
+        </article>
+        <article class="module">
+          <div class="code">Régie</div>
+          <h3>Messages de la FOH</h3>
+          <p>La régie envoie un message depuis la console, il s'affiche en grand au plateau. Un appui sur « Vu » et la FOH sait qu'il est lu.</p>
+        </article>
+        <article class="module">
+          <div class="code">Blackout</div>
+          <h3>Avant le show</h3>
+          <p>Écran noir avec le compte à rebours avant le show, le timecode et le nom de l'équipe. Mode BALANCE pour les réglages de l'après-midi.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cadre duo">
+      <div>
+        <div class="etiquette">Fait pour la tournée</div>
+        <h2>Prêt le jour J, sur le Mac que vous avez déjà.</h2>
+        <ul class="regles">
+          <li><span><b>Une tournée, un fichier.</b> Dates, salles, planning de la journée, setlists et réseau dans un pack que vous éditez dans le bus et qui se synchronise par iCloud.</span></li>
+          <li><span><b>Une app par tournée.</b> BLOC génère une app à son nom qui s'ouvre en plein écran, directement sur la date du jour.</span></li>
+          <li><span><b>Un téléphone en télécommande.</b> Setlist, messages et boutons de test sur le Wi-Fi du Mac uniquement, jamais sur le réseau du timecode.</span></li>
+          <li><span><b>Pensé pour les vieilles machines.</b> Mode éco automatique sur les Mac bicœur : moins de redessins, aucune animation, rien de ce qui compte en moins.</span></li>
+        </ul>
+      </div>
+      <div class="telephone" aria-label="La télécommande sur téléphone">
+        <div class="haut-tel"><b>DÉMO BLOC</b><span>Salle de démo</span></div>
+        <div class="tc-tel" id="tcTel">01:02:22</div>
+        <div class="sous">▶ en lecture · 25 i/s</div>
+        <div class="lab">EN COURS · 1 / 6</div>
+        <div class="morceau" id="morceauTel">01 Intro</div>
+        <div class="barre"><i id="barreTel"></i></div>
+        <div class="btn vu">Vu</div>
+        <div class="btn">Blackout</div>
+        <div class="onglets"><b>SHOW</b><span>SETLIST</span><span>BOUTONS</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cadre">
+      <div class="etiquette">Compatibilité</div>
+      <h2>Ce qu'il faut.</h2>
+      <dl class="fiche">
+        <div><dt>Mac</dt><dd>macOS 12 Monterey ou plus récent<small>Intel et Apple Silicon</small></dd></div>
+        <div><dt>Console</dt><dd>grandMA3, console ou onPC<small>Plugins BlocTC et BlocMsg fournis</small></dd></div>
+        <div><dt>Écrans</dt><dd>Dès 1024 × 640<small>Lisible sur un 15 pouces en rack</small></dd></div>
+        <div><dt>Réseau</dt><dd>sACN et Art-Net en écoute<small>BLOC n'envoie rien sans votre action</small></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="beta" id="beta">
+    <div class="cadre">
+      <div>
+        <div class="etiquette">Bêta</div>
+        <h2>La bêta est gratuite, sur demande.</h2>
+        <ol>
+          <li><span><b>Vous remplissez le formulaire</b> : votre métier, votre console, votre tournée ou votre salle.</span></li>
+          <li><span><b>On vous écrit</b> avec BLOC, les plugins grandMA3 et votre clé de licence à votre nom.</span></li>
+          <li><span><b>Vous l'utilisez en show</b> et vous nous dites ce qui manque. Une licence qui arrive à échéance ne coupe jamais un show en cours.</span></li>
+        </ol>
+      </div>
+      <div class="encart">
+        <p>Places limitées pendant la bêta. Les retours de terrain passent en priorité.</p>
+        <a class="bouton accent" id="lienTally" href="#beta"><span class="tri" aria-hidden="true"></span>Demander la bêta</a>
+        <span class="attente" id="attenteTally">Le formulaire ouvre très bientôt.</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="cadre">
+    <img src="assets/miz-visuel.png" alt="MIZ VISUEL" width="58" height="40">
+    <p>BLOC est conçu par MIZ VISUEL, design lumière. grandMA3 est une marque de MA Lighting.</p>
+  </div>
+</footer>
+
+<script>
+// Lien du formulaire Tally : le coller ici une fois le formulaire publié.
+const TALLY = "";
+
+(function () {
+  const lien = document.getElementById("lienTally");
+  const attente = document.getElementById("attenteTally");
+  if (TALLY) {
+    document.querySelectorAll('a[href="#beta"].accent').forEach(a => { if (a === lien) { a.href = TALLY; a.target = "_blank"; a.rel = "noopener"; } });
+    attente.hidden = true;
+  }
+
+  // L'écran SHOW est dessiné en 1280 × 800 puis mis à l'échelle de sa boîte.
+  const boite = document.getElementById("boite");
+  const ecran = document.getElementById("ecran");
+  function ajuster() { ecran.style.transform = "scale(" + (boite.clientWidth / 1280) + ")"; }
+  ajuster();
+  if (window.ResizeObserver) new ResizeObserver(ajuster).observe(boite); else addEventListener("resize", ajuster);
+
+  // Données de la tournée de démonstration.
+  const titres = [
+    ["01", "INTRO", "120", "4:00", ["var(--flammes)"]],
+    ["02", "LUMIÈRE", "124", "4:00", ["var(--co2)"]],
+    ["03", "FEU", "128", "4:00", ["var(--flammes)", "var(--co2)"]],
+    ["04", "CALME", "132", "4:00", []],
+    ["05", "CONFETTIS", "136", "4:00", ["#E87BC8"]],
+    ["06", "FINAL", "140", "4:00", ["var(--flammes)", "var(--co2)", "#E87BC8"]],
+  ];
+  const setlist = document.getElementById("setlist");
+  titres.forEach((t, i) => {
+    const d = document.createElement("div");
+    if (i === 0) d.className = "encours";
+    d.innerHTML = "<span></span><span>" + t[0] + "</span><span>" + t[1] +
+      t[4].map(c => '<span class="pastille" style="background:' + c + '"></span>').join("") +
+      "</span><span>" + t[2] + "</span><span>" + t[3] + "</span>";
+    setlist.appendChild(d);
+  });
+
+  const cues = [["1", "Noir salle"], ["2", "Lent bleu"], ["3", "Contre"], ["4", "Face"], ["5", "Flammes"], ["6", "Montée"], ["7", "Pont"], ["8", "Fin intro"]];
+  const conduite = document.getElementById("conduite");
+  const lignes = cues.map(c => {
+    const d = document.createElement("div");
+    d.className = "ligne";
+    d.innerHTML = "<span></span><span>" + c[0] + "</span><span>" + c[1] + "</span>";
+    return d;
+  });
+  let enCours = 2;
+  function montrerConduite() {
+    // Cinq lignes visibles, la cue en cours en deuxième position comme dans BLOC.
+    const debut = Math.max(0, Math.min(enCours - 1, cues.length - 5));
+    conduite.querySelectorAll(".ligne + .ligne").forEach(l => l.remove());
+    for (let i = debut; i < debut + 5; i++) {
+      const l = lignes[i];
+      l.className = "ligne" + (i === enCours ? " encours" : i < enCours ? " passee" : "");
+      conduite.appendChild(l);
+    }
+  }
+  montrerConduite();
+
+  const reduit = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const tc = document.getElementById("tc");
+  const tcTel = document.getElementById("tcTel");
+  const heure = document.getElementById("heure");
+  const decompte = document.getElementById("decompte");
+  const duree = document.getElementById("duree");
+  const barre = document.getElementById("barreTel");
+  const deux = n => String(n).padStart(2, "0");
+  const debutTC = (1 * 3600 + 2 * 60 + 22) * 25 + 2;
+  const t0 = performance.now();
+  let derniereCue = 0;
+
+  function trame(maintenant) {
+    const ecoule = (maintenant - t0) / 1000;
+    const images = debutTC + Math.floor(ecoule * 25);
+    const s = Math.floor(images / 25), f = images % 25;
+    const texte = deux(Math.floor(s / 3600)) + ":" + deux(Math.floor(s / 60) % 60) + ":" + deux(s % 60);
+    tc.textContent = texte + ":" + deux(f);
+    tcTel.textContent = texte;
+    const h = 21 * 3600 + 14 * 60 + 7 + Math.floor(ecoule);
+    heure.textContent = deux(Math.floor(h / 3600) % 24) + ":" + deux(Math.floor(h / 60) % 60) + ":" + deux(h % 60);
+    const reste = Math.max(0, 13 * 60 + 42 - Math.floor(ecoule));
+    decompte.textContent = "SHOW DANS " + deux(Math.floor(reste / 60)) + ":" + deux(reste % 60);
+    const show = 22 + Math.floor(ecoule);
+    duree.textContent = "Show " + Math.floor(show / 3600) + ":" + deux(Math.floor(show / 60) % 60) + ":" + deux(show % 60);
+    barre.style.width = Math.min(100, (show / 240) * 100) + "%";
+    // Un Go toutes les 4 secondes.
+    const cue = Math.floor(ecoule / 4);
+    if (cue !== derniereCue) {
+      derniereCue = cue;
+      enCours = 2 + (cue % (cues.length - 2));
+      montrerConduite();
+    }
+    if (!reduit) requestAnimationFrame(trame);
+  }
+  if (!reduit) requestAnimationFrame(trame);
+})();
+</script>
+</body>
+</html>
