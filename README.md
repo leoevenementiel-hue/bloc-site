@@ -3,6 +3,7 @@
 Page de présentation de BLOC (MIZ VISUEL), publiée par GitHub Pages.
 
 - `index.html` : la page entière (styles et script inclus).
+- `plugins.html` : l'onglet Plugins (Pack Note MIZ SOFTWARE, plugins BlocTC et BlocMsg). Coller le lien de la fiche AddOnDesk dans `const ADDONDESK = ""` en bas du fichier : le bouton d'achat s'active tout seul.
 - `assets/` : logos BLOC et MIZ VISUEL, icônes.
 - Le formulaire de bêta est un formulaire Tally : coller son lien dans `const TALLY = ""` en bas de `index.html`.
 
