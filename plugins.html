@@ -48,6 +48,7 @@ img { max-width: 100%; display: block; }
 header.haut { padding-block: 22px; }
 header.haut .cadre { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 header.haut .logo { height: 34px; width: auto; }
+.marque-lien { display: inline-flex; }
 .bouton {
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--display); font-weight: 750; font-variation-settings: "wdth" 112;
@@ -132,7 +133,7 @@ footer p { margin: 0; font-size: 14px; color: var(--texte3); max-width: 70ch; }
 
 <header class="haut">
   <div class="cadre">
-    <img class="logo" src="assets/bloc-logo.png" alt="BLOC" width="95" height="34">
+    <a href="./" class="marque-lien" aria-label="MIZ SOFTWARE, accueil"><img class="logo" src="assets/miz-software.png" alt="MIZ SOFTWARE" width="140" height="34"></a>
     <nav class="onglets" aria-label="Pages du site">
       <a href="./">BLOC</a>
       <a href="plugins.html" aria-current="page">Plugins</a>
@@ -179,7 +180,7 @@ footer p { margin: 0; font-size: 14px; color: var(--texte3); max-width: 70ch; }
       <article class="produit" id="plugins-bloc">
         <img class="visuel centre" src="assets/bloc-icone.png" alt="Icône de l'app BLOC" width="512" height="512">
         <div class="corps">
-          <div class="marque">Fournis avec BLOC · MIZ VISUEL</div>
+          <div class="marque">Fournis avec BLOC · MIZ SOFTWARE</div>
           <h2>BlocTC + BlocMsg</h2>
           <p><b>Les plugins grandMA3 de BLOC.</b> Ils relient ta console à l'écran de show.</p>
           <ul class="regles">

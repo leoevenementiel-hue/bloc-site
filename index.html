@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BLOC · MIZ VISUEL</title>
+<title>BLOC · MIZ SOFTWARE</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="BLOC, l'écran de show du pupitreur lumière : timecode, setlist, conduite grandMA3 et réseau, sur un Mac au plateau. Bêta ouverte sur demande.">
 <meta property="og:title" content="BLOC · l'écran de show du pupitreur">
@@ -87,6 +87,8 @@ nav.onglets a[aria-current="page"] { color: var(--ambre); border-bottom-color: v
 
 /* ——— Ouverture ——— */
 .ouverture { padding-block: 40px 28px; }
+.logo-produit { height: 34px; width: auto; margin-bottom: 22px; }
+.marque-lien { display: inline-flex; }
 .etiquette {
   font-family: var(--mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ambre);
 }
@@ -258,7 +260,7 @@ footer p { margin: 0; font-size: 14px; color: var(--texte3); }
 
 <header class="haut">
   <div class="cadre">
-    <img class="logo" src="assets/bloc-logo.png" alt="BLOC" width="95" height="34">
+    <a href="./" class="marque-lien" aria-label="MIZ SOFTWARE, accueil"><img class="logo" src="assets/miz-software.png" alt="MIZ SOFTWARE" width="140" height="34"></a>
     <nav class="onglets" aria-label="Pages du site">
       <a href="./" aria-current="page">BLOC</a>
       <a href="plugins.html">Plugins</a>
@@ -269,6 +271,7 @@ footer p { margin: 0; font-size: 14px; color: var(--texte3); }
 
 <main>
   <div class="cadre ouverture">
+    <img class="logo-produit" src="assets/bloc-logo.png" alt="BLOC" width="95" height="34">
     <div class="etiquette">Écran de show · grandMA3 · Mac OS</div>
     <h1>Tout le show <em>sous les yeux</em>, lisible de loin.</h1>
     <p class="chapeau">BLOC affiche au plateau ce dont le pupitreur et l'équipe lumière ont besoin pendant le show : <strong>le timecode, la setlist, la conduite de la console et l'état du réseau</strong>. Il tourne sur un Mac, même un vieux Mac mini en rack, à côté de grandMA3.</p>
@@ -434,8 +437,8 @@ footer p { margin: 0; font-size: 14px; color: var(--texte3); }
 
 <footer>
   <div class="cadre">
-    <img src="assets/miz-visuel.png" alt="MIZ VISUEL" width="58" height="40">
-    <p>BLOC est conçu par MIZ VISUEL, design lumière. grandMA3 est une marque de MA Lighting.</p>
+    <img src="assets/miz-software.png" alt="MIZ SOFTWARE" width="140" height="34">
+    <p>BLOC est édité par MIZ SOFTWARE. © MIZ SOFTWARE, tous droits réservés. grandMA3 est une marque de MA Lighting ; MIZ SOFTWARE n'est pas affilié à MA Lighting.</p>
   </div>
 </footer>
 
